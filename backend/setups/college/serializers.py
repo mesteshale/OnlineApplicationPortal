@@ -11,6 +11,9 @@ class CollegeSerializer(serializers.ModelSerializer):
 
        
 # #################################################################################################
+from rest_framework import serializers
+from django.contrib.auth.models import User
+
 class UserSerializer(serializers.ModelSerializer):
     
     password1 = serializers.CharField(write_only=True)
@@ -19,11 +22,12 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'password1', 'password2']
-
+        
         # Define extra_kwargs to make password1 and password2 write-only
         extra_kwargs = {
             'password1': {'write_only': True},
-            'password2': {'write_only': True}
+            'password2': {'write_only': True},
+            'email': {'required': True}  # Ensure email is required
         }
 
     def validate(self, data):
@@ -32,6 +36,12 @@ class UserSerializer(serializers.ModelSerializer):
         """
         if data['password1'] != data['password2']:
             raise serializers.ValidationError("Passwords do not match.")
+        
+        # Ensure email is valid and not empty
+        email = data.get('email')
+        if not email:
+            raise serializers.ValidationError("Email is required.")
+        
         return data
     
     def create(self, validated_data):
@@ -48,6 +58,3 @@ class UserSerializer(serializers.ModelSerializer):
             password=validated_data['password1']  # Use password1 as the password
         )
         return user
-    
-
- 
