@@ -10,6 +10,7 @@ class ApplicationInformation(models.Model):
     field_of_study = models.ForeignKey('study_field.StudyField', on_delete=models.CASCADE, verbose_name=_('Field of Study'))
     study_program = models.ForeignKey('study_program.StudyProgram', on_delete=models.CASCADE, verbose_name=_('Study Program'))
     spacial_case = models.CharField(max_length=255, verbose_name=_('Special Case'), blank=True)
+    duration = models.CharField(max_length=1, verbose_name=_('Duration'), blank=True)
     status = models.BooleanField(default=True, verbose_name=_('Active Status'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created At'))
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_('Updated At'))
