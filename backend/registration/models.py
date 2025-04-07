@@ -96,6 +96,7 @@ class ApplicantDocumentation(models.Model):
     # File fields for document uploads
 
     # File fields for document uploads with validation for file types
+    degree = models.FileField(upload_to='uploads/degree/', null=True, blank=True, validators=[FileExtensionValidator(allowed_extensions=['pdf','jpg', 'jpeg', 'png']),validate_file_size])
     sponsorship = models.FileField(upload_to='uploads/sponsorship/', null=True, blank=True, validators=[FileExtensionValidator(allowed_extensions=['pdf']),validate_file_size])
     student_copy = models.FileField(upload_to='uploads/student_copy/',null=True, blank=True, validators=[FileExtensionValidator(allowed_extensions=['pdf','jpg', 'jpeg', 'png']),validate_file_size])
     recommendation = models.FileField(upload_to='uploads/recommendation/', null=True,blank=True, validators=[FileExtensionValidator(allowed_extensions=['pdf']),validate_file_size])
