@@ -18,7 +18,7 @@ class StudyField(models.Model):
         ordering = ['field_of_study']  # Default ordering
 
     def __str__(self):
-        return f"{self.field_of_study} ({self.department.name})"
+        return f"{self.field_of_study} "
     
      
 

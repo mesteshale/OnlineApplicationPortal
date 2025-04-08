@@ -15,4 +15,4 @@ class Department(models.Model):
         ordering = ['name']  # Default ordering
 
     def __str__(self):
-        return f"{self.name} ({self.college.name})"
+        return f"{self.name}"

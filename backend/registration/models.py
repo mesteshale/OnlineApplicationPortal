@@ -83,8 +83,6 @@ class ApplicantGAT(models.Model):
 
 class ApplicantProgramSelection(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    college = models.ForeignKey('setups.college.College', on_delete=models.CASCADE)
-    department = models.ForeignKey('setups.department.Department', on_delete=models.CASCADE)
     field_of_study = models.ForeignKey(ApplicationInformation, on_delete=models.CASCADE)
 
     def __str__(self):
