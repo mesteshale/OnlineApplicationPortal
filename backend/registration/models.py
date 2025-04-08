@@ -65,14 +65,7 @@ class ApplicantGAT(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.GAT_No}"
     
-#################################################################################################################
 
-class ApplicantProgramSelection(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    field_of_study = models.CharField(max_length=255)
-
-    def __str__(self):
-        return f"{self.user.username} - {self.field_of_study}"
     
 #################################################################################################################
 

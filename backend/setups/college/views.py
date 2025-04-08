@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from rest_framework import generics
-from .serializers import UserSerializer,CollegeSerializer
+from rest_framework import generics, status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .serializers import UserSerializer, CollegeSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from setups.college.models import College
 
@@ -12,7 +14,7 @@ class CollegeList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         return College.objects.all()
-    
+
     def perform_create(self, serializer):
         if serializer.is_valid():
             serializer.save()
@@ -20,13 +22,13 @@ class CollegeList(generics.ListCreateAPIView):
             print(serializer.errors)
 
 # Delete view for College (DELETE)
-class CollegeDelete(generics.DestroyAPIView): 
+class CollegeDelete(generics.DestroyAPIView):
     serializer_class = CollegeSerializer
-    permission_classes = [IsAuthenticated]     
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return College.objects.all()   
-    
+        return College.objects.all()
+
 # Retrieve and Update view for a single College (GET, PUT)
 class CollegeDetail(generics.RetrieveUpdateAPIView):
     serializer_class = CollegeSerializer
@@ -42,4 +44,29 @@ class CreateUserView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
 
+class CheckUserView(APIView):
+    permission_classes = [AllowAny]
 
+    def post(self, request):
+        username = request.data.get('username')
+        email = request.data.get('email')
+
+        if not username and not email:
+            return Response(
+                {'error': 'Please provide either username or email'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if username:
+            user = User.objects.filter(username=username).first()
+        else:
+            user = User.objects.filter(email=email).first()
+
+        if user:
+            return Response({
+                'exists': True,
+                'username': user.username,
+                'email': user.email
+            })
+        else:
+            return Response({'exists': False})

@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
-import os
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -48,7 +48,7 @@ SIMPLE_JWT = {
 # Application definition
 
 INSTALLED_APPS = [
-    
+
     'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -71,13 +71,13 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # CORS middleware should be at the top, after security middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -156,20 +156,55 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Option 1: Specific origins
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Vite default port
+    "http://localhost:8080",  # Add your current frontend port
+    "http://127.0.0.1:8080",  # Also add with IP address
+]
+
+# Option 2: Allow all origins (more permissive, use for development only)
 CORS_ALLOW_ALL_ORIGINS = True
+
 CORS_ALLOW_CREDENTIALS = True
 
-# REST Framework settings
+# Additional CORS settings
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
-    ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
+# JWT Settings
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
 }
 
 JAZZMIN_SETTINGS = {
