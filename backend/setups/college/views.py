@@ -1,9 +1,9 @@
-from django.shortcuts import render
+# Django imports
 from django.contrib.auth.models import User
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import UserSerializer, CollegeSerializer
+from .serializers import UserSerializer, CollegeSerializer, UserDetailSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from setups.college.models import College
 
@@ -70,3 +70,12 @@ class CheckUserView(APIView):
             })
         else:
             return Response({'exists': False})
+
+
+class CurrentUserView(APIView):
+    """View to retrieve the current authenticated user's details"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserDetailSerializer(request.user)
+        return Response(serializer.data)

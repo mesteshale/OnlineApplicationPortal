@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from .models import College
 
 
-
 class CollegeSerializer(serializers.ModelSerializer):
     class Meta:
        model = College
@@ -11,8 +10,14 @@ class CollegeSerializer(serializers.ModelSerializer):
 
 
 # #################################################################################################
-from rest_framework import serializers
-from django.contrib.auth.models import User
+# User Serializers
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    """Serializer for returning user details to the client"""
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'first_name', 'last_name']
+        read_only_fields = fields
 
 class UserSerializer(serializers.ModelSerializer):
 

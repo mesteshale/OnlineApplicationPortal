@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from setups.application_information.models import ApplicationInformation
+from setups.sponsorship.models import Sponsorship
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.validators import FileExtensionValidator
 from django.core.exceptions import ValidationError
@@ -8,18 +9,23 @@ from django.core.exceptions import ValidationError
 
 # A utility function for generating application numbers
 def generate_application_num():
-    # Example of generating a unique application number (you can modify this logic based on your requirements)
-    return f"APP{str(User.objects.count() + 1).zfill(4)}"
+    # Generate a unique application number with a prefix and padded number
+    count = User.objects.count() + 1
+    # Format: A followed by a 4-digit number
+    return f"A{str(count).zfill(4)}"
 
 class ApplicantInformation(models.Model):
     # Linking to the User model (author) for the user who applied
     author = models.OneToOneField(User, on_delete=models.CASCADE, related_name='applicant_info')
 
-    # Basic applicant info
-    last_name = models.CharField(max_length=100)
+    # Basic applicant info - using User model's first_name and last_name
+    # These fields will be used to display the user's name from the User model
+    # first_name and last_name are stored in the User model
+    grandfather_name = models.CharField(max_length=100, blank=True, null=True)
     gender = models.CharField(max_length=10)
     dob = models.DateField()
     mobile = models.CharField(max_length=15)
+    sponsorship = models.ForeignKey(Sponsorship, on_delete=models.SET_NULL,null=True,blank=True,related_name='applicants')
 
     # Undergraduate details
     ug_university = models.CharField(max_length=255)
@@ -32,18 +38,18 @@ class ApplicantInformation(models.Model):
     pg_CGPA = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
 
     # Automatically generate a unique application number
-    application_num = models.CharField(max_length=5, unique=True, default=generate_application_num)
+    application_num = models.CharField(max_length=10, unique=True, default=generate_application_num)
 
     # Registrar and Department approval information
-    registrar_off_status = models.CharField(max_length=50)
+    registrar_off_status = models.CharField(max_length=50, default='Pending')
     reg_approved_by = models.ForeignKey(User, related_name='registrar_approvals', null=True, blank=True, on_delete=models.SET_NULL)
 
-    department_status = models.CharField(max_length=50)
+    department_status = models.CharField(max_length=50, default='Pending')
     dep_approved_by = models.ForeignKey(User, related_name='department_approvals', null=True, blank=True, on_delete=models.SET_NULL)
 
     # Additional fields
     remark = models.TextField(null=True, blank=True)
-    payment_status = models.CharField(max_length=50)
+    payment_status = models.CharField(max_length=50, default='Pending')
     telebirr_id = models.CharField(max_length=50, null=True, blank=True)
 
     # Timestamps for creation and updates
@@ -52,27 +58,35 @@ class ApplicantInformation(models.Model):
 
     def __str__(self):
         return f"{self.author.username} - {self.application_num}"
-    
+
 #################################################################################################################
 
 class ApplicantGAT(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    GAT_No = models.CharField(max_length=12, unique=True)
+    GAT_No = models.CharField(max_length=12)
     GAT_Result = models.PositiveIntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(100)]
     )
 
+    class Meta:
+        # Ensure each user can only have one GAT record
+        constraints = [
+            models.UniqueConstraint(fields=['user'], name='unique_user_gat')
+        ]
+
     def __str__(self):
         return f"{self.user.username} - {self.GAT_No}"
-    
 
-    
+
+
 #################################################################################################################
 
 class ApplicantProgramSelection(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    college = models.ForeignKey('setups.college.College', on_delete=models.CASCADE)
+    department = models.ForeignKey('setups.department.Department', on_delete=models.CASCADE)
     field_of_study = models.ForeignKey(ApplicationInformation, on_delete=models.CASCADE)
-    
+
     def __str__(self):
         return f"{self.user.username} - {self.field_of_study.program_name}"
 

@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'setups.registration_period',
     'setups.application_information',
     'registration',
+    'setups.sponsorship',
 ]
 
 MIDDLEWARE = [
