@@ -37,6 +37,14 @@ class CollegeDetail(generics.RetrieveUpdateAPIView):
     def get_queryset(self):
         return College.objects.all()
 
+# Public list view for College (GET)
+class PublicCollegeList(generics.ListAPIView):
+    serializer_class = CollegeSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return College.objects.all()
+
 # #####################################################################################################
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()

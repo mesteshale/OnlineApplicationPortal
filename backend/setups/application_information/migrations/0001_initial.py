@@ -23,6 +23,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('spacial_case', models.CharField(blank=True, max_length=255, verbose_name='Special Case')),
+                ('duration', models.CharField(blank=True, max_length=1, verbose_name='Duration')),
                 ('status', models.BooleanField(default=True, verbose_name='Active Status')),
                 ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Created At')),
                 ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Updated At')),

@@ -90,16 +90,137 @@ class ApplicantGATSerializer(serializers.ModelSerializer):
 class ApplicantProgramSelectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApplicantProgramSelection
-        fields = '__all__'
+        fields = ['id', 'user', 'application_info', 'created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at']
+        extra_kwargs = {
+            'user': {'required': False},
+            'application_info': {'required': True}
+        }
+
+    def create(self, validated_data):
+        print(f"Creating program selection with data: {validated_data}")
+        try:
+            # Get the current user from the request
+            request = self.context.get('request')
+            print(f"Request: {request}")
+            print(f"Request data: {request.data if request else 'No request'}")
+
+            user = request.user if request else validated_data.get('user')
+            print(f"User: {user}")
+
+            if not user:
+                print("User is required but not provided")
+                raise serializers.ValidationError("User is required")
+
+            # Set the user in the validated data
+            validated_data['user'] = user
+
+            # Check if application_info is provided
+            if 'application_info' not in validated_data:
+                print("Application info is required but not provided")
+                raise serializers.ValidationError({"application_info": ["This field is required."]})
+
+            print(f"Updated validated_data: {validated_data}")
+
+            # Check if the user already has a program selection record
+            try:
+                existing_selection = ApplicantProgramSelection.objects.get(user=user)
+                print(f"User already has a program selection record with ID: {existing_selection.id}")
+
+                # Update the existing record
+                for key, value in validated_data.items():
+                    print(f"Setting {key} = {value}")
+                    setattr(existing_selection, key, value)
+                existing_selection.save()
+                print(f"Updated existing program selection record")
+                return existing_selection
+            except ApplicantProgramSelection.DoesNotExist:
+                # Create a new record
+                print("No existing record found, creating new one")
+                instance = super().create(validated_data)
+                print(f"Successfully created new program selection record with ID: {instance.id}")
+                return instance
+        except Exception as e:
+            print(f"Error in program selection serializer create method: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            raise
 
 class ApplicantDocumentationSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApplicantDocumentation
-        fields = '__all__'
+        fields = ['id', 'user', 'degree', 'sponsorship', 'student_copy', 'recommendation', 'costsharing', 'publication', 'conceptnote', 'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
+        extra_kwargs = {
+            'user': {'required': False},
+            'degree': {'required': False},
+            'sponsorship': {'required': False},
+            'student_copy': {'required': False},
+            'recommendation': {'required': False},
+            'costsharing': {'required': False},
+            'publication': {'required': False},
+            'conceptnote': {'required': False}
+        }
+
+    def create(self, validated_data):
+        print(f"Creating documentation with data: {validated_data}")
+        try:
+            # Get the current user from the request
+            request = self.context.get('request')
+            print(f"Request: {request}")
+
+            user = request.user if request else validated_data.get('user')
+            print(f"User: {user}")
+
+            if not user:
+                print("User is required but not provided")
+                raise serializers.ValidationError("User is required")
+
+            # Set the user in the validated data
+            validated_data['user'] = user
+
+            # Create a new record
+            instance = super().create(validated_data)
+            print(f"Successfully created new documentation record with ID: {instance.id}")
+            return instance
+        except Exception as e:
+            print(f"Error in documentation serializer create method: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            raise
 
 class ApplicantPaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApplicantPayment
-        fields = '__all__'
+        fields = ['id', 'user', 'payment_amount', 'payment_status', 'payment_method', 'telebirr_id', 'transaction_id', 'payment_date', 'payment_time', 'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
+        extra_kwargs = {
+            'user': {'required': False}
+        }
+
+    def create(self, validated_data):
+        print(f"Creating payment with data: {validated_data}")
+        try:
+            # Get the current user from the request
+            request = self.context.get('request')
+            print(f"Request: {request}")
+
+            user = request.user if request else validated_data.get('user')
+            print(f"User: {user}")
+
+            if not user:
+                print("User is required but not provided")
+                raise serializers.ValidationError("User is required")
+
+            # Set the user in the validated data
+            validated_data['user'] = user
+
+            # Create a new record
+            instance = super().create(validated_data)
+            print(f"Successfully created new payment record with ID: {instance.id}")
+            return instance
+        except Exception as e:
+            print(f"Error in payment serializer create method: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            raise

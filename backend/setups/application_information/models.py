@@ -20,5 +20,5 @@ class ApplicationInformation(models.Model):
         verbose_name_plural = _('Application Information')
         ordering = ['-created_at']
 
-def __str__(self):
-    return self.department.name
+    def __str__(self):
+        return f"{self.department.name} - {self.field_of_study.field_of_study}"

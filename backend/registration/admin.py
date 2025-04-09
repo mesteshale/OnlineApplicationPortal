@@ -4,7 +4,9 @@ from .models import ApplicantGAT, ApplicantProgramSelection, ApplicantDocumentat
 # Register your models here.
 admin.site.register(ApplicantInformation)
 admin.site.register(ApplicantGAT)
-admin.site.register(ApplicantProgramSelection)
+@admin.register(ApplicantProgramSelection)
+class ApplicantProgramSelectionAdmin(admin.ModelAdmin):
+    exclude = ('id', 'created_at', 'updated_at')
 admin.site.register(ApplicantDocumentation)
 admin.site.register(ApplicantPayment)
 
