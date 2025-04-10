@@ -66,8 +66,8 @@ class ApplicantInformation(models.Model):
 
     # Additional fields
     remark = models.TextField(null=True, blank=True)
-    payment_status = models.CharField(max_length=50, default='Pending')
-    telebirr_id = models.CharField(max_length=50, null=True, blank=True)
+    payment_status = models.BooleanField(default='False')
+    telebirr_id = models.CharField(max_length=100, null=True, blank=True)
 
     # Timestamps for creation and updates
     created_at = models.DateTimeField(auto_now_add=True)

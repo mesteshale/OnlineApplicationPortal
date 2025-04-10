@@ -35,7 +35,7 @@ class PublicProgramList(generics.ListAPIView):
     serializer_class = ProgramSerializer
     permission_classes = [AllowAny]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['program_code', 'program_name']
+    search_fields = ['program_code']
 
     def get_queryset(self):
         return Program.objects.all()
